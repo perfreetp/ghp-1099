@@ -6,8 +6,15 @@ import classnames from 'classnames';
 import type { InspectionItem as InspectionItemType } from '@/types';
 import { categoryLabels } from '@/data/inspection';
 
+type PropsInspection = InspectionItemType & {
+  abnormalCount?: number;
+  photoCount?: number;
+  voiceCount?: number;
+  progress?: number;
+};
+
 interface InspectionItemProps {
-  item: InspectionItemType;
+  item: PropsInspection;
   onClick?: () => void;
 }
 
@@ -59,15 +66,22 @@ const InspectionItemComponent: React.FC<InspectionItemProps> = ({ item, onClick 
   const getActionText = (status: string) => {
     switch (status) {
       case 'pending': return '去检查';
-      case 'completed': return '查看';
-      case 'abnormal': return '复查';
+      case 'completed': return '复查';
+      case 'abnormal': return '处理异常';
       default: return '去检查';
     }
   };
 
-  const checkedCount = item.items.filter(i => i.checked).length;
+  const checkedCount = item.items.filter(i => i.checked || i.abnormal).length;
   const totalCount = item.items.length;
-  const progress = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+  const progress = typeof item.progress === 'number'
+    ? item.progress
+    : totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
+  const abnormalCount = typeof item.abnormalCount === 'number'
+    ? item.abnormalCount
+    : item.items.filter(i => i.abnormal).length;
+  const photoCount = item.photoCount ?? 0;
+  const voiceCount = item.voiceCount ?? 0;
 
   return (
     <View className={styles.inspectionCard} onClick={handleClick}>
@@ -82,6 +96,23 @@ const InspectionItemComponent: React.FC<InspectionItemProps> = ({ item, onClick 
               <Text className={styles.locationIcon}>📍</Text>
               {item.location} · {categoryLabels[item.category]}
             </Text>
+            <View style={{ display: 'flex', gap: 12, marginTop: 6, flexWrap: 'wrap' }}>
+              {photoCount > 0 && (
+                <Text style={{ fontSize: 20, color: '#1D4ED8', background: '#DBEAFE', padding: '2rpx 12rpx', borderRadius: 20 }}>
+                  📷 {photoCount}张
+                </Text>
+              )}
+              {voiceCount > 0 && (
+                <Text style={{ fontSize: 20, color: '#92400E', background: '#FEF3C7', padding: '2rpx 12rpx', borderRadius: 20 }}>
+                  🎙️ {voiceCount}条
+                </Text>
+              )}
+              {abnormalCount > 0 && (
+                <Text style={{ fontSize: 20, color: '#B91C1C', background: '#FEE2E2', padding: '2rpx 12rpx', borderRadius: 20 }}>
+                  ⚠️ {abnormalCount}处异常
+                </Text>
+              )}
+            </View>
           </View>
         </View>
         <Text className={classnames(styles.statusTag, getStatusClass(item.status))}>
@@ -91,7 +122,7 @@ const InspectionItemComponent: React.FC<InspectionItemProps> = ({ item, onClick 
       <View className={styles.cardContent}>
         <View className={styles.progressSection}>
           <Text className={styles.progressText}>
-            检查进度：{checkedCount}/{totalCount} 项
+            检查进度：{checkedCount}/{totalCount} 项 · {progress}%
           </Text>
           <View className={styles.progressBar}>
             <View className={styles.progressFill} style={{ width: `${progress}%` }} />

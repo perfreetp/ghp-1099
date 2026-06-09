@@ -4,6 +4,7 @@ import Taro from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
 import { stationMembers } from '@/data/incidents';
+import { useIncidentStore, type VoiceRecord } from '@/store/incident';
 
 const levels = [
   { key: 'minor', label: '一般', desc: '冒烟/小火情', icon: '🟡', iconClass: styles.liMinor },
@@ -13,11 +14,18 @@ const levels = [
 ];
 
 const IncidentReportPage: React.FC = () => {
+  const addIncident = useIncidentStore(s => s.addIncident);
+
   const [location, setLocation] = useState('');
   const [description, setDescription] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<string>('');
   const [photos, setPhotos] = useState<string[]>([]);
   const [notifiedMembers, setNotifiedMembers] = useState<string[]>([]);
+  const [voice, setVoiceState] = useState<VoiceRecord | null>(null);
+
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [voiceSeconds, setVoiceSeconds] = useState(0);
+  const [voiceTimer, setVoiceTimer] = useState<number | null>(null);
 
   const handleAddPhoto = () => {
     Taro.chooseImage({
@@ -30,7 +38,7 @@ const IncidentReportPage: React.FC = () => {
       fail: () => {
         if (photos.length < 3) {
           const newPhotos = [...photos];
-          newPhotos.push(`photo_${Date.now()}`);
+          newPhotos.push(`photo_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`);
           setPhotos(newPhotos);
           Taro.showToast({ title: '已添加照片', icon: 'success' });
         }
@@ -44,7 +52,31 @@ const IncidentReportPage: React.FC = () => {
   };
 
   const handleVoice = () => {
-    Taro.showToast({ title: '语音录入功能开发中', icon: 'none' });
+    setShowVoiceModal(true);
+    setVoiceSeconds(0);
+    const timer = Taro.setInterval(() => {
+      setVoiceSeconds(s => s + 1);
+    }, 1000) as unknown as number;
+    setVoiceTimer(timer);
+  };
+
+  const handleVoiceStop = (done: boolean) => {
+    if (voiceTimer) {
+      clearInterval(voiceTimer);
+      setVoiceTimer(null);
+    }
+    if (done && voiceSeconds >= 1) {
+      const v: VoiceRecord = {
+        id: `v_${Date.now()}`,
+        duration: voiceSeconds,
+        size: `${(voiceSeconds * 8).toFixed(1)}KB`,
+        createdAt: new Date().toISOString(),
+        url: `incident_voice_${Date.now()}.mp3`
+      };
+      setVoiceState(v);
+      Taro.showToast({ title: '语音已保存', icon: 'success' });
+    }
+    setShowVoiceModal(false);
   };
 
   const toggleMember = (id: string) => {
@@ -67,19 +99,27 @@ const IncidentReportPage: React.FC = () => {
 
     Taro.showModal({
       title: '确认上报',
-      content: '确定要上报该火情吗？上报后将立即通知相关人员。',
+      content: '确定要上报该火情吗？上报后将立即通知相关人员并写入事件列表。',
       confirmText: '确认上报',
       confirmColor: '#E63946',
       success: (res) => {
         if (res.confirm) {
           Taro.showLoading({ title: '上报中...' });
           setTimeout(() => {
+            const newInc = addIncident({
+              location,
+              level: selectedLevel as any,
+              description,
+              photos,
+              notifiedMemberIds: notifiedMembers,
+              voice: voice || undefined
+            });
             Taro.hideLoading();
             Taro.showToast({ title: '上报成功', icon: 'success' });
             setTimeout(() => {
-              Taro.switchTab({ url: '/pages/incident/index' });
-            }, 1500);
-          }, 1000);
+              Taro.redirectTo({ url: `/pages/incident-detail/index?id=${newInc.id}` });
+            }, 1200);
+          }, 700);
         }
       }
     });
@@ -93,10 +133,16 @@ const IncidentReportPage: React.FC = () => {
       confirmColor: '#E63946',
       success: (res) => {
         if (res.confirm) {
-          Taro.showToast({ title: '呼叫功能模拟中', icon: 'none' });
+          Taro.showToast({ title: '已模拟拨打 119', icon: 'success' });
         }
       }
     });
+  };
+
+  const formatVoiceTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -173,10 +219,17 @@ const IncidentReportPage: React.FC = () => {
         </View>
 
         <View className={styles.section}>
-          <Text className={styles.sectionTitle}>
-            <Text className={styles.sectionIcon}>📷</Text>
-            现场照片
-          </Text>
+          <View style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <Text className={styles.sectionTitle} style={{ marginBottom: 0 }}>
+              <Text className={styles.sectionIcon}>📷</Text>
+              现场照片
+            </Text>
+            {photos.length > 0 && (
+              <Text style={{ fontSize: 24, color: '#1D4ED8', fontWeight: 600 }}>
+                已添加 {photos.length} 张
+              </Text>
+            )}
+          </View>
           <View className={styles.photoGrid}>
             {photos.map((photo, idx) => (
               <View key={idx} className={styles.photoItem} onClick={handleAddPhoto}>
@@ -196,13 +249,59 @@ const IncidentReportPage: React.FC = () => {
         </View>
 
         <View className={styles.section}>
-          <Text className={styles.sectionTitle}>
-            <Text className={styles.sectionIcon}>🎙️</Text>
-            语音录入
-          </Text>
+          <View style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <Text className={styles.sectionTitle} style={{ marginBottom: 0 }}>
+              <Text className={styles.sectionIcon}>🎙️</Text>
+              语音描述
+            </Text>
+            {voice && (
+              <Text style={{ fontSize: 24, color: '#92400E', background: '#FEF3C7', padding: '4rpx 16rpx', borderRadius: 20, fontWeight: 600 }}>
+                {formatVoiceTime(voice.duration)} · {voice.size}
+              </Text>
+            )}
+          </View>
+          {voice && (
+            <View
+              style={{
+                padding: 20,
+                background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+                borderRadius: 16,
+                marginBottom: 16,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16
+              }}
+              onClick={() => Taro.showToast({ title: '播放语音中...', icon: 'none' })}
+            >
+              <View style={{
+                width: 56, height: 56, borderRadius: 28,
+                background: 'linear-gradient(135deg, #EF4444, #B91C1C)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: '#fff', fontSize: 24
+              }}>▶</View>
+              <View style={{ flex: 1 }}>
+                <View style={{
+                  height: 6, background: 'rgba(0,0,0,0.1)',
+                  borderRadius: 4, marginBottom: 6, overflow: 'hidden'
+                }}>
+                  <View style={{ width: '35%', height: '100%', background: '#E63946', borderRadius: 4 }} />
+                </View>
+                <View style={{ display: 'flex', justifyContent: 'space-between', fontSize: 20, color: '#92400E' }}>
+                  <Text>火情语音描述</Text>
+                  <Text>{formatVoiceTime(voice.duration)} · {voice.size}</Text>
+                </View>
+              </View>
+              <Text
+                style={{ fontSize: 24, color: '#B91C1C', fontWeight: 600 }}
+                onClick={(e: any) => { e.stopPropagation(); setVoiceState(null); }}
+              >重录</Text>
+            </View>
+          )}
           <Button className={styles.voiceBtn} onClick={handleVoice}>
             <Text className={styles.voiceIcon}>🎤</Text>
-            <Text className={styles.voiceText}>点击录音描述异常情况</Text>
+            <Text className={styles.voiceText}>
+              {voice ? '重新录音描述火情' : '点击录音描述火情情况'}
+            </Text>
           </Button>
         </View>
 
@@ -251,6 +350,55 @@ const IncidentReportPage: React.FC = () => {
           </View>
         </View>
       </View>
+
+      {showVoiceModal && (
+        <View className={styles.voiceModal || styles.voiceModal} style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999
+        }}>
+          <View style={{
+            width: 560, background: '#fff', borderRadius: 32, padding: 48, textAlign: 'center'
+          }}>
+            <Text style={{ fontSize: 32, fontWeight: 600, color: '#1A1A1A', marginBottom: 48 }}>
+              正在录入火情描述...
+            </Text>
+            <View style={{
+              width: 200, height: 200, borderRadius: 100,
+              margin: '0 auto 48',
+              background: 'linear-gradient(135deg, #FF6B6B 0%, #E63946 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 80,
+              animation: 'pulse 1.2s infinite'
+            }}>🎤</View>
+            <Text style={{
+              fontSize: 40, fontWeight: 700, color: '#E63946', marginBottom: 16
+            }}>{formatVoiceTime(voiceSeconds)}</Text>
+            <Text style={{
+              fontSize: 24, color: '#8E8E8E', marginBottom: 48
+            }}>请清晰描述火情位置、燃烧物、被困人员等情况</Text>
+            <View style={{ display: 'flex', gap: 24 }}>
+              <Button
+                style={{
+                  flex: 1, height: 88, background: '#F3F4F6', color: '#4A4A4A',
+                  borderRadius: 48, fontSize: 28, fontWeight: 600,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+                onClick={() => handleVoiceStop(false)}
+              >取消</Button>
+              <Button
+                style={{
+                  flex: 1, height: 88,
+                  background: voiceSeconds < 1 ? '#C9CDD4' : 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
+                  color: '#fff', borderRadius: 48, fontSize: 28, fontWeight: 600,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+                onClick={() => handleVoiceStop(true)}
+                disabled={voiceSeconds < 1}
+              >{voiceSeconds < 1 ? '录音中...' : '完成录入'}</Button>
+            </View>
+          </View>
+        </View>
+      )}
 
       <View className={styles.bottomBar}>
         <Button className={styles.cancelBtn} onClick={() => Taro.navigateBack()}>

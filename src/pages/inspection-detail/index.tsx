@@ -1,49 +1,108 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { View, Text, Button, Input } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useRouter, useDidShow, useReady } from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
-import { inspectionTemplates, categoryLabels } from '@/data/inspection';
-import type { CheckPoint } from '@/types';
-
-interface CheckItemState extends CheckPoint {
-  photos: string[];
-  voiceRemark?: string;
-}
+import { categoryLabels } from '@/data/inspection';
+import { useInspectionStore, type VoiceRecord } from '@/store/inspection';
+import type { CheckItemState } from '@/store/inspection';
 
 const InspectionDetailPage: React.FC = () => {
-  const template = inspectionTemplates[0];
-  const [items, setItems] = useState<CheckItemState[]>(
-    template.items.map(item => ({ ...item, photos: [] }))
-  );
+  const router = useRouter();
+  const inspId = router.params.id || 'insp1';
+  const autoVoice = router.params.autovoice === '1';
+  const autoPhoto = router.params.autophoto === '1';
+
+  const getInspection = useInspectionStore(s => s.getInspection);
+  const updateCheckItem = useInspectionStore(s => s.updateCheckItem);
+  const saveDraft = useInspectionStore(s => s.saveDraft);
+  const submitInspection = useInspectionStore(s => s.submitInspection);
+  const addPhoto = useInspectionStore(s => s.addPhoto);
+  const removePhoto = useInspectionStore(s => s.removePhoto);
+  const setVoice = useInspectionStore(s => s.setVoice);
+  const addRemark = useInspectionStore(s => s.addRemark);
+
+  const [, forceUpdate] = useState(0);
+  const template = getInspection(inspId);
+
+  const [items, setItems] = useState<CheckItemState[]>(template ? template.items : []);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
   const [remarkInput, setRemarkInput] = useState('');
   const [showVoiceModal, setShowVoiceModal] = useState(false);
   const [voiceSeconds, setVoiceSeconds] = useState(0);
   const [voiceTimer, setVoiceTimer] = useState<number | null>(null);
+  const [voiceTargetItemId, setVoiceTargetItemId] = useState<string | null>(null);
+
+  useReady(() => {
+    if (template) {
+      setItems(template.items);
+    }
+    if (autoVoice) {
+      setTimeout(() => {
+        const firstUnfinished = template?.items.find(i => !i.checked && !i.abnormal) || template?.items[0];
+        if (firstUnfinished) {
+          setVoiceTargetItemId(firstUnfinished.id);
+          triggerVoice(firstUnfinished.id);
+        }
+      }, 400);
+    }
+    if (autoPhoto) {
+      setTimeout(() => {
+        const firstUnfinished = template?.items.find(i => !i.checked && !i.abnormal) || template?.items[0];
+        if (firstUnfinished) {
+          handleAddPhoto(firstUnfinished.id);
+        }
+      }, 400);
+    }
+  });
+
+  useDidShow(() => {
+    const t = getInspection(inspId);
+    if (t) {
+      setItems(t.items);
+      forceUpdate(n => n + 1);
+    }
+  });
 
   const progress = useMemo(() => {
     const checked = items.filter(i => i.checked || i.abnormal).length;
-    return { checked, total: items.length, percent: Math.round((checked / items.length) * 100) };
+    return { checked, total: items.length, percent: items.length > 0 ? Math.round((checked / items.length) * 100) : 0 };
   }, [items]);
 
-  const categoryIcon = template.category === 'hose' ? '🧯' :
-    template.category === 'extinguisher' ? '🔥' : '🚰';
+  const categoryIcon = template?.category === 'hose' ? '🧯' :
+    template?.category === 'extinguisher' ? '🔥' : '🚰';
+
+  const syncState = (newItems: CheckItemState[]) => {
+    setItems(newItems);
+    const patch: any = {};
+    newItems.forEach(it => {
+      updateCheckItem(inspId, it.id, {
+        checked: it.checked,
+        abnormal: it.abnormal,
+        photos: it.photos,
+        remark: it.remark,
+        voice: it.voice
+      });
+    });
+    saveDraft(inspId, patch);
+  };
 
   const handleToggleCheck = (id: string) => {
-    setItems(prev => prev.map(item =>
+    const newItems = items.map(item =>
       item.id === id
         ? { ...item, checked: !item.checked, abnormal: false }
         : item
-    ));
+    );
+    syncState(newItems);
   };
 
   const handleToggleAbnormal = (id: string) => {
-    setItems(prev => prev.map(item =>
+    const newItems = items.map(item =>
       item.id === id
         ? { ...item, abnormal: !item.abnormal, checked: false }
         : item
-    ));
+    );
+    syncState(newItems);
   };
 
   const handleAddPhoto = (itemId: string) => {
@@ -52,42 +111,32 @@ const InspectionDetailPage: React.FC = () => {
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
       success: (res) => {
-        setItems(prev => prev.map(item =>
-          item.id === itemId
-            ? { ...item, photos: [...item.photos, ...res.tempFilePaths].slice(0, 3) }
-            : item
-        ));
+        res.tempFilePaths.forEach(p => addPhoto(inspId, itemId, p));
+        const t = getInspection(inspId);
+        if (t) setItems(t.items);
+        Taro.showToast({ title: '照片已保存', icon: 'success' });
       },
       fail: () => {
-        setItems(prev => prev.map(item =>
-          item.id === itemId && item.photos.length < 3
-            ? { ...item, photos: [...item.photos, `photo_${Date.now()}`] }
-            : item
-        ));
-        Taro.showToast({ title: '已添加照片', icon: 'success' });
+        const cur = items.find(i => i.id === itemId);
+        if (cur && cur.photos.length < 3) {
+          addPhoto(inspId, itemId, `photo_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`);
+          const t = getInspection(inspId);
+          if (t) setItems(t.items);
+          Taro.showToast({ title: '已添加照片', icon: 'success' });
+        }
       }
     });
   };
 
   const handleRemovePhoto = (itemId: string, photoIdx: number, e: any) => {
     e.stopPropagation();
-    setItems(prev => prev.map(item =>
-      item.id === itemId
-        ? { ...item, photos: item.photos.filter((_, i) => i !== photoIdx) }
-        : item
-    ));
+    removePhoto(inspId, itemId, photoIdx);
+    const t = getInspection(inspId);
+    if (t) setItems(t.items);
   };
 
-  const handleGlobalPhoto = () => {
-    const firstUnfinished = items.find(i => !i.checked && !i.abnormal);
-    if (firstUnfinished) {
-      handleAddPhoto(firstUnfinished.id);
-    } else {
-      Taro.showToast({ title: '请先选择检查项', icon: 'none' });
-    }
-  };
-
-  const handleGlobalVoice = () => {
+  const triggerVoice = (itemId: string) => {
+    setVoiceTargetItemId(itemId);
     setShowVoiceModal(true);
     setVoiceSeconds(0);
     const timer = Taro.setInterval(() => {
@@ -96,23 +145,37 @@ const InspectionDetailPage: React.FC = () => {
     setVoiceTimer(timer);
   };
 
+  const handleGlobalVoice = () => {
+    const firstUnfinished = items.find(i => !i.checked && !i.abnormal) || items[0];
+    if (firstUnfinished) {
+      triggerVoice(firstUnfinished.id);
+    }
+  };
+
   const handleVoiceStop = (done: boolean) => {
     if (voiceTimer) {
       clearInterval(voiceTimer);
       setVoiceTimer(null);
     }
-    if (done) {
-      const firstUnfinished = items.find(i => !i.checked && !i.abnormal) || items[0];
-      if (firstUnfinished) {
-        setItems(prev => prev.map(item =>
-          item.id === firstUnfinished.id
-            ? { ...item, voiceRemark: `语音备注 ${voiceSeconds}秒`, abnormal: true }
-            : item
-        ));
-      }
-      Taro.showToast({ title: '语音已保存', icon: 'success' });
+    if (done && voiceTargetItemId) {
+      const voice: VoiceRecord = {
+        id: `v_${Date.now()}`,
+        duration: voiceSeconds,
+        size: `${(voiceSeconds * 8).toFixed(1)}KB`,
+        createdAt: new Date().toISOString(),
+        url: `voice_${voiceTargetItemId}_${Date.now()}.mp3`
+      };
+      setVoice(inspId, voiceTargetItemId, voice);
+      const t = getInspection(inspId);
+      if (t) setItems(t.items);
+      Taro.showToast({ title: '语音备注已保存', icon: 'success' });
     }
     setShowVoiceModal(false);
+  };
+
+  const handleOpenRemark = (itemId: string, current?: string) => {
+    setRemarkInput(current || '');
+    setActiveItemId(itemId);
   };
 
   const handleSaveRemark = (itemId: string) => {
@@ -120,11 +183,9 @@ const InspectionDetailPage: React.FC = () => {
       setActiveItemId(null);
       return;
     }
-    setItems(prev => prev.map(item =>
-      item.id === itemId
-        ? { ...item, remark: remarkInput, abnormal: true }
-        : item
-    ));
+    addRemark(inspId, itemId, remarkInput.trim());
+    const t = getInspection(inspId);
+    if (t) setItems(t.items);
     setRemarkInput('');
     setActiveItemId(null);
   };
@@ -135,22 +196,31 @@ const InspectionDetailPage: React.FC = () => {
 
     Taro.showModal({
       title: '提交检查结果',
-      content: `共 ${total} 项，已完成 ${checked} 项${hasAbnormal ? '，存在异常项' : ''}。确认提交？`,
+      content: `共 ${total} 项，已完成 ${checked} 项${hasAbnormal ? `，其中 ${items.filter(i=>i.abnormal).length} 项异常` : ''}。确认提交？`,
       confirmText: '确认提交',
       confirmColor: '#1E40AF',
       success: (res) => {
         if (res.confirm) {
           Taro.showLoading({ title: '提交中...' });
           setTimeout(() => {
+            submitInspection(inspId);
             Taro.hideLoading();
             Taro.showToast({ title: '提交成功', icon: 'success' });
             setTimeout(() => {
               Taro.navigateBack();
-            }, 1500);
-          }, 1000);
+            }, 1200);
+          }, 700);
         }
       }
     });
+  };
+
+  const handleSaveDraft = () => {
+    saveDraft(inspId);
+    Taro.showToast({ title: '已暂存，可随时继续', icon: 'success' });
+    setTimeout(() => {
+      Taro.navigateBack();
+    }, 800);
   };
 
   const formatVoiceTime = (s: number) => {
@@ -158,6 +228,14 @@ const InspectionDetailPage: React.FC = () => {
     const sec = s % 60;
     return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
+
+  if (!template) {
+    return (
+      <View style={{ padding: 60, textAlign: 'center' }}>
+        <Text style={{ fontSize: 26, color: '#888' }}>检查项不存在</Text>
+      </View>
+    );
+  }
 
   return (
     <View className={styles.pageContainer}>
@@ -179,6 +257,11 @@ const InspectionDetailPage: React.FC = () => {
             <Text className={styles.metaIcon}>📋</Text>
             {progress.total} 项检查
           </Text>
+          {template.isDraft && (
+            <Text className={styles.metaItem} style={{ background: 'rgba(254, 243, 199, 0.3)', padding: '4rpx 16rpx', borderRadius: 20 }}>
+              📝 有暂存内容
+            </Text>
+          )}
         </View>
       </View>
 
@@ -197,7 +280,10 @@ const InspectionDetailPage: React.FC = () => {
       </View>
 
       <View className={styles.quickActions}>
-        <Button className={classnames(styles.quickBtn, styles.quickBtnPhoto)} onClick={handleGlobalPhoto}>
+        <Button className={classnames(styles.quickBtn, styles.quickBtnPhoto)} onClick={() => {
+          const first = items.find(i => !i.checked && !i.abnormal) || items[0];
+          if (first) handleAddPhoto(first.id);
+        }}>
           <Text className={styles.quickBtnIcon}>📷</Text>
           <Text className={styles.quickBtnText}>拍照留痕</Text>
         </Button>
@@ -270,18 +356,27 @@ const InspectionDetailPage: React.FC = () => {
                     {item.photos.length > 0 ? `${item.photos.length}张` : '拍照'}
                   </Button>
                   <Button
-                    className={classnames(styles.tagBtn, activeItemId === item.id && styles.tagBtnActive)}
-                    onClick={() => setActiveItemId(activeItemId === item.id ? null : item.id)}
+                    className={classnames(styles.tagBtn, (!!item.voice || activeItemId === item.id) && styles.tagBtnActive)}
+                    onClick={() => triggerVoice(item.id)}
+                  >
+                    <Text className={styles.tagIcon}>🎙️</Text>
+                    {item.voice ? `${formatVoiceTime(item.voice.duration)}` : '语音'}
+                  </Button>
+                  <Button
+                    className={classnames(styles.tagBtn, (!!item.remark) && styles.tagBtnActive)}
+                    onClick={() => handleOpenRemark(item.id, item.remark)}
                   >
                     <Text className={styles.tagIcon}>📝</Text>
                     {item.remark ? '已备注' : '备注'}
                   </Button>
                 </View>
 
-                {(item.photos.length > 0 || item.remark || item.voiceRemark) && (
+                {(item.photos.length > 0 || item.remark || item.voice) && (
                   <View className={styles.remarkBox}>
-                    {item.voiceRemark && (
-                      <Text className={styles.remarkText}>🎙️ {item.voiceRemark}</Text>
+                    {item.voice && (
+                      <Text className={styles.remarkText}>
+                        🎙️ 语音备注 · {formatVoiceTime(item.voice.duration)} · {item.voice.size}
+                      </Text>
                     )}
                     {item.remark && (
                       <Text className={styles.remarkText}>📝 {item.remark}</Text>
@@ -336,7 +431,7 @@ const InspectionDetailPage: React.FC = () => {
                         style={{ flex: 1, height: 72, fontSize: 26 }}
                         onClick={() => handleSaveRemark(item.id)}
                       >
-                        保存
+                        保存备注
                       </Button>
                     </View>
                   </View>
@@ -350,16 +445,20 @@ const InspectionDetailPage: React.FC = () => {
       {showVoiceModal && (
         <View className={styles.voiceModal}>
           <View className={styles.voiceCard}>
-            <Text className={styles.voiceTitle}>语音录入中...</Text>
+            <Text className={styles.voiceTitle}>正在录入语音备注...</Text>
             <View className={styles.voiceCircle}>🎤</View>
             <Text className={styles.voiceTime}>{formatVoiceTime(voiceSeconds)}</Text>
-            <Text className={styles.voiceHint}>请对着话筒描述异常情况</Text>
+            <Text className={styles.voiceHint}>请清晰描述异常情况</Text>
             <View className={styles.voiceActions}>
               <Button className={styles.voiceCancel} onClick={() => handleVoiceStop(false)}>
                 取消
               </Button>
-              <Button className={styles.voiceDone} onClick={() => handleVoiceStop(true)}>
-                完成
+              <Button
+                className={styles.voiceDone}
+                onClick={() => handleVoiceStop(true)}
+                disabled={voiceSeconds < 1}
+              >
+                {voiceSeconds < 1 ? '录音中...' : '完成'}
               </Button>
             </View>
           </View>
@@ -370,7 +469,7 @@ const InspectionDetailPage: React.FC = () => {
         <Button className={styles.cancelBtn} onClick={() => Taro.navigateBack()}>
           返回
         </Button>
-        <Button className={styles.saveBtn} onClick={() => Taro.showToast({ title: '已保存草稿', icon: 'success' })}>
+        <Button className={styles.saveBtn} onClick={handleSaveDraft}>
           暂存
         </Button>
         <Button

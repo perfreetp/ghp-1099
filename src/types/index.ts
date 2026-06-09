@@ -31,6 +31,14 @@ export interface InspectionItem {
   status: 'pending' | 'completed' | 'abnormal';
 }
 
+export interface VoiceRecord {
+  id: string;
+  duration: number;
+  size: string;
+  createdAt: string;
+  url?: string;
+}
+
 export interface CheckPoint {
   id: string;
   title: string;
@@ -38,6 +46,8 @@ export interface CheckPoint {
   abnormal: boolean;
   remark?: string;
   photoUrl?: string;
+  photos?: string[];
+  voice?: VoiceRecord;
 }
 
 export interface Incident {
@@ -54,6 +64,10 @@ export interface Incident {
   result?: string;
   reporter: string;
   photos?: string[];
+  voice?: VoiceRecord;
+  notifiedMemberIds?: string[];
+  resultNote?: string;
+  handler?: string;
 }
 
 export interface LearningItem {

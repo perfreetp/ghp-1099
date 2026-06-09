@@ -1,0 +1,338 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 180rpx;
+}
+
+.navHeader {
+  background: linear-gradient(135deg, #1D3557 0%, #3B82F6 100%);
+  padding: $spacing-xl $page-padding $spacing-2xl;
+  color: $color-text-white;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -80rpx;
+    top: -80rpx;
+    width: 240rpx;
+    height: 240rpx;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 65%);
+    border-radius: 50%;
+  }
+}
+
+.navTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.navIcon {
+  margin-right: 12rpx;
+  font-size: 36rpx;
+}
+
+.navInfo {
+  font-size: $font-size-sm;
+  opacity: 0.92;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 16rpx;
+}
+
+.navSummary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-sm;
+  position: relative;
+  z-index: 1;
+  margin-top: $spacing-md;
+}
+
+.summaryItem {
+  background: rgba(255,255,255,0.14);
+  border-radius: $radius-md;
+  padding: $spacing-md $spacing-sm;
+  text-align: center;
+  backdrop-filter: blur(8rpx);
+}
+
+.summaryNum {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+  margin-bottom: 4rpx;
+}
+
+.summaryLabel {
+  font-size: $font-size-xs;
+  opacity: 0.88;
+}
+
+.routeSection {
+  padding: 0 $page-padding;
+  margin-top: -$spacing-xl;
+  position: relative;
+  z-index: 2;
+}
+
+.routeCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-lg;
+  box-shadow: 0 12rpx 36rpx rgba(29, 53, 87, 0.15);
+  margin-bottom: $spacing-md;
+}
+
+.routeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.routeTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.routeTitleIcon {
+  margin-right: 10rpx;
+}
+
+.routeSteps {
+  position: relative;
+  padding-left: 16rpx;
+}
+
+.routeLine {
+  position: absolute;
+  left: 26rpx;
+  top: 20rpx;
+  bottom: 20rpx;
+  width: 4rpx;
+  background: linear-gradient(180deg, #3B82F6 0%, #1D3557 100%);
+  border-radius: $radius-round;
+}
+
+.stepItem {
+  position: relative;
+  padding: $spacing-sm 0 $spacing-sm $spacing-xl;
+  display: flex;
+  align-items: flex-start;
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.stepDot {
+  position: absolute;
+  left: 0;
+  top: 16rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.sdStart {
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+}
+
+.sdMid {
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+}
+
+.sdEnd {
+  background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+}
+
+.stepContent {
+  flex: 1;
+  padding-top: 6rpx;
+}
+
+.stepText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.6;
+  margin-bottom: 4rpx;
+}
+
+.stepMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.stepHint {
+  margin-top: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  border-radius: $radius-md;
+  font-size: $font-size-xs;
+  color: #92400E;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+}
+
+.stepHintIcon {
+  font-size: $font-size-sm;
+  flex-shrink: 0;
+}
+
+.targetSection {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-md;
+}
+
+.targetCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  border: 2rpx solid #DBEAFE;
+}
+
+.targetIcon {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: $radius-lg;
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.targetInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.targetName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.targetMeta {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.5;
+}
+
+.alertSection {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-md;
+}
+
+.alertCard {
+  background: linear-gradient(135deg, #FEF2F2 0%, #FFFFFF 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  border-left: 6rpx solid $color-error;
+}
+
+.alertHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.alertIcon {
+  font-size: 28rpx;
+  margin-right: 10rpx;
+}
+
+.alertTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-error;
+}
+
+.alertList {
+  padding: 0;
+  list-style: none;
+}
+
+.alertItem {
+  font-size: $font-size-xs;
+  color: #7F1D1D;
+  line-height: 1.8;
+  padding-left: 28rpx;
+  position: relative;
+
+  &::before {
+    content: '•';
+    position: absolute;
+    left: 8rpx;
+    color: $color-error;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding calc($spacing-md + env(safe-area-inset-bottom));
+  display: flex;
+  gap: $spacing-md;
+  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.08);
+  z-index: 100;
+}
+
+.shareBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}
+
+.guideBtn {
+  @include button-reset;
+  flex: 2;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, #1D3557 0%, #3B82F6 100%);
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 4rpx 16rpx rgba(29, 53, 87, 0.3);
+}

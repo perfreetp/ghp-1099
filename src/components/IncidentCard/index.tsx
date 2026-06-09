@@ -17,7 +17,7 @@ const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onClick, onAction
     if (onClick) {
       onClick();
     } else {
-      Taro.showToast({ title: '事件详情开发中', icon: 'none' });
+      Taro.navigateTo({ url: `/pages/incident-detail/index?id=${incident.id}` });
     }
   };
 
@@ -26,19 +26,15 @@ const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onClick, onAction
     if (onAction) {
       onAction();
     } else {
-      if (incident.status === 'reporting') {
-        Taro.navigateTo({ url: '/pages/incident-report/index' });
-      } else {
-        Taro.showToast({ title: '处理详情开发中', icon: 'none' });
-      }
+      Taro.navigateTo({ url: `/pages/incident-detail/index?id=${incident.id}` });
     }
   };
 
   const level = levelConfig[incident.level];
   const status = statusConfig[incident.status];
 
-  const getActionText = (status: string) => {
-    switch (status) {
+  const getActionText = (st: string) => {
+    switch (st) {
       case 'reporting': return '立即出动';
       case 'dispatched': return '确认到达';
       case 'handling': return '填写结果';
@@ -46,6 +42,10 @@ const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onClick, onAction
       default: return '处理';
     }
   };
+
+  const photoCount = (incident.photos || []).length;
+  const hasVoice = !!incident.voice;
+  const memberCount = (incident.notifiedMemberIds || []).length;
 
   return (
     <View className={styles.incidentCard} onClick={handleClick}>
@@ -71,6 +71,23 @@ const IncidentCard: React.FC<IncidentCardProps> = ({ incident, onClick, onAction
         {incident.description && (
           <Text className={styles.description}>{incident.description}</Text>
         )}
+        <View style={{ display: 'flex', gap: 12, marginTop: 8, marginBottom: 10, flexWrap: 'wrap' }}>
+          {photoCount > 0 && (
+            <Text style={{ fontSize: 20, color: '#1D4ED8', background: '#DBEAFE', padding: '2rpx 12rpx', borderRadius: 20 }}>
+              📷 {photoCount}张照片
+            </Text>
+          )}
+          {hasVoice && (
+            <Text style={{ fontSize: 20, color: '#92400E', background: '#FEF3C7', padding: '2rpx 12rpx', borderRadius: 20 }}>
+              🎙️ 语音备注
+            </Text>
+          )}
+          {memberCount > 0 && (
+            <Text style={{ fontSize: 20, color: '#0F766E', background: '#CCFBF1', padding: '2rpx 12rpx', borderRadius: 20 }}>
+              👥 已通知{memberCount}人
+            </Text>
+          )}
+        </View>
         <View className={styles.metaRow}>
           <View className={styles.metaItem}>
             <View className={styles.metaIcon}>📍</View>

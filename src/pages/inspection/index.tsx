@@ -1,16 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, Button } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import styles from './index.module.scss';
 import classnames from 'classnames';
 import SectionHeader from '@/components/SectionHeader';
 import InspectionItemComponent from '@/components/InspectionItem';
-import { inspectionTemplates, categoryLabels } from '@/data/inspection';
-import type { InspectionItem } from '@/types';
+import { categoryLabels } from '@/data/inspection';
+import { useInspectionStore } from '@/store/inspection';
 
 const InspectionPage: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
-  const [inspections, setInspections] = useState<InspectionItem[]>(inspectionTemplates);
+  const [, forceRender] = useState(0);
+  const getAllInspections = useInspectionStore(s => s.getAllInspections);
+  const getProgress = useInspectionStore(s => s.getProgress);
+
+  useDidShow(() => {
+    forceRender(n => n + 1);
+  });
 
   const filters = [
     { key: 'all', label: '全部' },
@@ -19,41 +25,44 @@ const InspectionPage: React.FC = () => {
     { key: 'hydrant', label: '消火栓' }
   ];
 
+  const allList = getAllInspections() as any[];
+
   const filteredList = useMemo(() => {
-    if (activeFilter === 'all') return inspections;
-    return inspections.filter(i => i.category === activeFilter);
-  }, [inspections, activeFilter]);
+    if (activeFilter === 'all') return allList;
+    return allList.filter(i => i.category === activeFilter);
+  }, [allList, activeFilter]);
 
   const stats = useMemo(() => {
-    const total = inspections.length;
-    const completed = inspections.filter(i => i.status === 'completed').length;
-    const pending = inspections.filter(i => i.status === 'pending').length;
-    const abnormal = inspections.filter(i => i.status === 'abnormal').length;
-    const totalItems = inspections.reduce((acc, i) => acc + i.items.length, 0);
-    const checkedItems = inspections.reduce(
-      (acc, i) => acc + i.items.filter(c => c.checked).length,
-      0
-    );
-    const percent = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
-    return { total, completed, pending, abnormal, totalItems, checkedItems, percent };
-  }, [inspections]);
-
-  const handleTakePhoto = () => {
-    Taro.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['camera'],
-      success: () => {
-        Taro.showToast({ title: '拍照成功', icon: 'success' });
-      },
-      fail: () => {
-        Taro.showToast({ title: '拍照功能开发中', icon: 'none' });
-      }
-    });
-  };
+    const total = allList.length;
+    const completed = allList.filter(i => i.status === 'completed').length;
+    const pending = allList.filter(i => i.status === 'pending').length;
+    const abnormal = allList.filter(i => i.status === 'abnormal').length;
+    const totalItems = allList.reduce((acc, i) => acc + i.items.length, 0);
+    const p = getProgress();
+    return {
+      total, completed, pending, abnormal,
+      totalItems,
+      checkedItems: p.checked,
+      percent: p.percent
+    };
+  }, [allList, getProgress]);
 
   const handleVoiceRecord = () => {
-    Taro.showToast({ title: '语音录入功能开发中', icon: 'none' });
+    const pending = filteredList.find(i => i.status !== 'completed');
+    if (pending) {
+      Taro.navigateTo({ url: `/pages/inspection-detail/index?id=${pending.id}&autovoice=1` });
+    } else {
+      Taro.showToast({ title: '暂无可记录检查项', icon: 'none' });
+    }
+  };
+
+  const handleTakePhoto = () => {
+    const pending = filteredList.find(i => i.status !== 'completed');
+    if (pending) {
+      Taro.navigateTo({ url: `/pages/inspection-detail/index?id=${pending.id}&autophoto=1` });
+    } else {
+      Taro.showToast({ title: '暂无可拍照检查项', icon: 'none' });
+    }
   };
 
   const handleStartInspection = () => {
@@ -66,7 +75,11 @@ const InspectionPage: React.FC = () => {
   };
 
   const handleSync = () => {
-    Taro.showToast({ title: '同步成功', icon: 'success' });
+    Taro.showLoading({ title: '同步中...' });
+    setTimeout(() => {
+      Taro.hideLoading();
+      Taro.showToast({ title: '同步成功', icon: 'success' });
+    }, 600);
   };
 
   return (
@@ -98,7 +111,7 @@ const InspectionPage: React.FC = () => {
               <Text className={styles.statLabel}>待检查</Text>
             </View>
             <View className={styles.statItem}>
-              <Text className={styles.statNum}>{stats.abnormal}</Text>
+              <Text className={styles.statNum} style={{ color: '#B91C1C' }}>{stats.abnormal}</Text>
               <Text className={styles.statLabel}>异常</Text>
             </View>
           </View>
@@ -163,9 +176,15 @@ const InspectionPage: React.FC = () => {
           moreText={`共${filteredList.length}项`}
         />
 
-        {filteredList.map(item => (
-          <InspectionItemComponent key={item.id} item={item} />
-        ))}
+        {filteredList.length === 0 ? (
+          <View style={{ padding: 60, textAlign: 'center' }}>
+            <Text style={{ fontSize: 26, color: '#8E8E8E' }}>暂无该类检查项</Text>
+          </View>
+        ) : (
+          filteredList.map(item => (
+            <InspectionItemComponent key={item.id} item={item} />
+          ))
+        )}
       </View>
     </View>
   );

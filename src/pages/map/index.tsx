@@ -73,7 +73,17 @@ const MapPage: React.FC = () => {
   };
 
   const handleNavigate = () => {
-    Taro.showToast({ title: '导航功能开发中', icon: 'none' });
+    if (nearbyHydrants.length > 0) {
+      Taro.navigateTo({
+        url: `/pages/navigation/index?hydrant=${nearbyHydrants[0].id}`
+      });
+    }
+  };
+
+  const handleHydrantClick = (hydrantId: string) => {
+    Taro.navigateTo({
+      url: `/pages/navigation/index?hydrant=${hydrantId}`
+    });
   };
 
   const handleEquipmentClick = (item: Equipment) => {
@@ -85,7 +95,9 @@ const MapPage: React.FC = () => {
       confirmText: '导航前往',
       success: (res) => {
         if (res.confirm) {
-          handleNavigate();
+          Taro.navigateTo({
+            url: `/pages/navigation/index?equipId=${item.id}`
+          });
         }
       }
     });
@@ -168,7 +180,7 @@ const MapPage: React.FC = () => {
           </View>
           <View className={styles.nearbyList}>
             {nearbyHydrants.map((h, idx) => (
-              <View key={h.id} className={styles.nearbyItem} onClick={handleNavigate}>
+              <View key={h.id} className={styles.nearbyItem} onClick={() => handleHydrantClick(h.id)}>
                 <View className={classnames(
                   styles.nearbyRank,
                   idx === 0 && styles.rankFirst

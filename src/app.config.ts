@@ -1,5 +1,6 @@
 export default defineAppConfig({
   pages: [
+    'pages/index/index',
     'pages/tasks/index',
     'pages/map/index',
     'pages/inspection/index',
@@ -7,8 +8,10 @@ export default defineAppConfig({
     'pages/profile/index',
     'pages/learning/index',
     'pages/incident-report/index',
+    'pages/incident-detail/index',
     'pages/inspection-detail/index',
-    'pages/emergency-plan/index'
+    'pages/emergency-plan/index',
+    'pages/navigation/index'
   ],
   window: {
     backgroundTextStyle: 'light',
@@ -24,12 +27,8 @@ export default defineAppConfig({
     borderStyle: 'white',
     list: [
       {
-        pagePath: 'pages/tasks/index',
-        text: '任务'
-      },
-      {
-        pagePath: 'pages/map/index',
-        text: '地图'
+        pagePath: 'pages/index/index',
+        text: '首页'
       },
       {
         pagePath: 'pages/inspection/index',
@@ -38,6 +37,10 @@ export default defineAppConfig({
       {
         pagePath: 'pages/incident/index',
         text: '事件'
+      },
+      {
+        pagePath: 'pages/map/index',
+        text: '地图'
       },
       {
         pagePath: 'pages/profile/index',
