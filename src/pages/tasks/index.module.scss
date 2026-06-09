@@ -1,0 +1,291 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-primary-bg 0%, $color-bg-page 30%);
+  padding-bottom: 40rpx;
+}
+
+.contentWrapper {
+  padding: 0 $page-padding;
+}
+
+.headerSection {
+  padding: $spacing-xl $page-padding $spacing-lg;
+}
+
+.greetingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.greeting {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.dateText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: 6rpx;
+}
+
+.weatherBadge {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 20rpx;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.weatherIcon {
+  margin-right: 8rpx;
+  font-size: $font-size-lg;
+}
+
+.dutyInfoCard {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 32rpx rgba(230, 57, 70, 0.3);
+  color: $color-text-white;
+}
+
+.dutyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.dutyTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+}
+
+.dutyIcon {
+  margin-right: 12rpx;
+  font-size: $font-size-xl;
+}
+
+.shiftTag {
+  padding: 6rpx 20rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.dutyTime {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  margin-bottom: 8rpx;
+}
+
+.dutyLocation {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+}
+
+.dutyProgress {
+  margin-top: $spacing-lg;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.progressText {
+  font-size: $font-size-sm;
+  opacity: 0.9;
+}
+
+.progressValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.statsRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.filterTabs {
+  display: flex;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 8rpx;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.filterTab {
+  flex: 1;
+  padding: 16rpx 0;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  border-radius: $radius-md;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+}
+
+.filterTabActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(230, 57, 70, 0.3);
+}
+
+.scheduleCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-top: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.scheduleTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+}
+
+.scheduleIcon {
+  margin-right: 12rpx;
+  font-size: $font-size-lg;
+}
+
+.scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.scheduleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+}
+
+.dayName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  width: 80rpx;
+}
+
+.shiftInfo {
+  flex: 1;
+  margin-left: $spacing-md;
+}
+
+.shiftName {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.shiftTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+}
+
+.scheduleStatus {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.statusCompleted {
+  background: $color-tag-completed;
+  color: #15803D;
+}
+
+.statusProgress {
+  background: $color-tag-progress;
+  color: #1D4ED8;
+}
+
+.statusPending {
+  background: $color-tag-pending;
+  color: #B45309;
+}
+
+.statusRest {
+  background: $color-bg-hover;
+  color: $color-text-tertiary;
+}
+
+.quickActions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.quickActionBtn {
+  flex: 1;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.quickActionIcon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-bottom: 12rpx;
+}
+
+.iconRed {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+}
+
+.iconBlue {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+}
+
+.iconGreen {
+  background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+}
+
+.iconYellow {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+}
+
+.quickActionText {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}

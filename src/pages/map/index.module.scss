@@ -1,0 +1,464 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 40rpx;
+}
+
+.contentWrapper {
+  padding: 0 $page-padding;
+}
+
+.searchBar {
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  padding: 16rpx 24rpx;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  box-shadow: $shadow-card;
+}
+
+.searchIcon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+  color: $color-text-tertiary;
+}
+
+.searchInput {
+  flex: 1;
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.searchPlaceholder {
+  color: $color-text-tertiary;
+}
+
+.filterBar {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  overflow-x: auto;
+  padding-bottom: 8rpx;
+  @include scroll-x-container;
+}
+
+.filterChip {
+  @include scroll-x-item(auto);
+  padding: 12rpx 24rpx;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  box-shadow: $shadow-card;
+  margin-right: $spacing-sm;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+}
+
+.filterChipActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  border-color: $color-primary-light;
+  box-shadow: 0 4rpx 12rpx rgba(230, 57, 70, 0.3);
+}
+
+.mapContainer {
+  height: 500rpx;
+  background: linear-gradient(135deg, #E0F2FE 0%, #F0FDF4 50%, #FEF9C3 100%);
+  border-radius: $radius-xl;
+  margin-bottom: $spacing-lg;
+  position: relative;
+  overflow: hidden;
+  box-shadow: $shadow-card;
+}
+
+.mapBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.3;
+}
+
+.mapGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.05) 1rpx, transparent 1rpx),
+    linear-gradient(90deg, rgba(0,0,0,0.05) 1rpx, transparent 1rpx);
+  background-size: 60rpx 60rpx;
+}
+
+.mapLabel {
+  position: absolute;
+  font-size: 20rpx;
+  color: $color-secondary;
+  font-weight: $font-weight-medium;
+  background: rgba(255,255,255,0.8);
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+}
+
+.labelF1 {
+  top: 80rpx;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.labelF2 {
+  top: 220rpx;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.labelF3 {
+  top: 360rpx;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.marker {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -100%);
+  z-index: 10;
+}
+
+.markerPin {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.2);
+  border: 4rpx solid #fff;
+}
+
+.pinRed {
+  background: $color-primary;
+}
+
+.pinOrange {
+  background: $color-warning;
+}
+
+.pinBlue {
+  background: $color-info;
+}
+
+.pinGreen {
+  background: $color-success;
+}
+
+.pinPurple {
+  background: #8B5CF6;
+}
+
+.markerLabel {
+  font-size: 20rpx;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 4rpx 10rpx;
+  border-radius: $radius-xs;
+  margin-top: 6rpx;
+  white-space: nowrap;
+}
+
+.myLocation {
+  position: absolute;
+  bottom: 24rpx;
+  right: 24rpx;
+  width: 80rpx;
+  height: 80rpx;
+  background: $color-bg-card;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  box-shadow: $shadow-float;
+  z-index: 20;
+}
+
+.myLocationDot {
+  position: absolute;
+  top: 130rpx;
+  left: 120rpx;
+  width: 24rpx;
+  height: 24rpx;
+  background: $color-info;
+  border-radius: $radius-round;
+  border: 4rpx solid #fff;
+  box-shadow: 0 0 0 8rpx rgba(59, 130, 246, 0.3);
+  transform: translate(-50%, -50%);
+  z-index: 15;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 8rpx rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 0 0 16rpx rgba(59, 130, 246, 0.1); }
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.titleText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.titleIcon {
+  margin-right: 12rpx;
+  font-size: $font-size-xl;
+}
+
+.viewAll {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.nearbyCard {
+  background: linear-gradient(135deg, $color-secondary 0%, $color-secondary-light 100%);
+  border-radius: $radius-xl;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 24rpx rgba(29, 53, 87, 0.2);
+  color: $color-text-white;
+}
+
+.nearbyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+}
+
+.nearbyTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  display: flex;
+  align-items: center;
+}
+
+.nearbyIcon {
+  margin-right: 12rpx;
+  font-size: $font-size-xl;
+}
+
+.navigateBtn {
+  @include button-reset;
+  padding: 0 24rpx;
+  height: $button-height-sm;
+  background: rgba(255,255,255,0.2);
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+  border: 2rpx solid rgba(255,255,255,0.3);
+}
+
+.nearbyList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.nearbyItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md;
+  background: rgba(255,255,255,0.1);
+  border-radius: $radius-lg;
+  backdrop-filter: blur(10rpx);
+}
+
+.nearbyRank {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-md;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  margin-right: $spacing-md;
+}
+
+.rankFirst {
+  background: #FBBF24;
+  color: #1a1a1a;
+}
+
+.nearbyInfo {
+  flex: 1;
+}
+
+.nearbyName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  margin-bottom: 6rpx;
+}
+
+.nearbyLocation {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+}
+
+.nearbyDistance {
+  text-align: right;
+}
+
+.distanceValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.distanceLabel {
+  font-size: $font-size-xs;
+  opacity: 0.8;
+}
+
+.equipmentList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.equipmentCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  display: flex;
+  align-items: center;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.equipmentIcon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.iconHydrant {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+}
+
+.iconExtinguisher {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+}
+
+.iconHose {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+}
+
+.iconAxe {
+  background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%);
+}
+
+.iconMask {
+  background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+}
+
+.equipmentInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.equipmentName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+  @include text-ellipsis;
+}
+
+.equipmentMeta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.metaTag {
+  display: flex;
+  align-items: center;
+}
+
+.floorTag {
+  padding: 4rpx 12rpx;
+  background: $color-secondary-bg;
+  color: $color-secondary;
+  border-radius: $radius-xs;
+  font-weight: $font-weight-medium;
+}
+
+.equipmentRight {
+  margin-left: $spacing-md;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+}
+
+.statusBadge {
+  padding: 6rpx 14rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.statusNormal {
+  background: $color-tag-completed;
+  color: #15803D;
+}
+
+.statusMaintenance {
+  background: $color-tag-pending;
+  color: #B45309;
+}
+
+.statusExpired {
+  background: $color-tag-urgent;
+  color: #B91C1C;
+}
+
+.distanceText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+}

@@ -1,0 +1,47 @@
+@use '@/styles/variables.scss' as *;
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-lg 0 $spacing-md;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-left: 12rpx;
+}
+
+.titleIcon {
+  width: 40rpx;
+  height: 40rpx;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+}
+
+.moreText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.moreArrow {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-left: 4rpx;
+}

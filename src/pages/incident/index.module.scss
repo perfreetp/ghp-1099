@@ -1,0 +1,245 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(180deg, $color-primary-bg 0%, $color-bg-page 25%);
+  padding-bottom: 40rpx;
+}
+
+.contentWrapper {
+  padding: 0 $page-padding;
+}
+
+.headerSection {
+  padding: $spacing-lg $page-padding $spacing-md;
+}
+
+.pageTitle {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+}
+
+.pageDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.emergencyBtn {
+  @include button-reset;
+  width: 100%;
+  height: 160rpx;
+  border-radius: $radius-xl;
+  background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+  color: $color-text-white;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-lg;
+  box-shadow: 0 8rpx 32rpx rgba(239, 68, 68, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  }
+}
+
+.btnIcon {
+  font-size: 48rpx;
+  margin-bottom: 8rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.btnText {
+  position: relative;
+  z-index: 1;
+}
+
+.btnSubText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-normal;
+  opacity: 0.9;
+  margin-top: 6rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.statsRow {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.memberCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+}
+
+.memberHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.memberTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.memberIcon {
+  margin-right: 12rpx;
+  font-size: $font-size-lg;
+}
+
+.notifyBtn {
+  @include button-reset;
+  padding: 0 20rpx;
+  height: $button-height-sm;
+  background: $color-secondary-bg;
+  color: $color-secondary;
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.memberGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+}
+
+.memberItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md 8rpx;
+  border-radius: $radius-md;
+  background: $color-bg-hover;
+  transition: all $transition-base;
+
+  &:active {
+    background: $color-primary-bg;
+  }
+}
+
+.memberAvatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-text-white;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  margin-bottom: 12rpx;
+  position: relative;
+}
+
+.statusDot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: $radius-round;
+  border: 3rpx solid #fff;
+}
+
+.dotOn {
+  background: $color-success;
+}
+
+.dotBusy {
+  background: $color-warning;
+}
+
+.dotOff {
+  background: $color-text-tertiary;
+}
+
+.memberName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.memberRole {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.filterBar {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  overflow-x: auto;
+  padding-bottom: 8rpx;
+  @include scroll-x-container;
+}
+
+.filterChip {
+  @include scroll-x-item(auto);
+  padding: 12rpx 24rpx;
+  background: $color-bg-card;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  box-shadow: $shadow-card;
+  margin-right: $spacing-sm;
+  border: 2rpx solid transparent;
+  transition: all $transition-base;
+}
+
+.filterChipActive {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  border-color: $color-primary-light;
+  box-shadow: 0 4rpx 12rpx rgba(230, 57, 70, 0.3);
+}
+
+.emptyState {
+  padding: $spacing-xl $spacing-lg;
+  text-align: center;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.emptyIcon {
+  font-size: 80rpx;
+  margin-bottom: $spacing-md;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}

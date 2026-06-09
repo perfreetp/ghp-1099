@@ -1,0 +1,476 @@
+@use '@/styles/variables.scss' as *;
+
+.pageContainer {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.headerBanner {
+  background: linear-gradient(135deg, #0F766E 0%, #14B8A6 100%);
+  padding: $spacing-xl $page-padding;
+  margin-bottom: $spacing-lg;
+  color: $color-text-white;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -80rpx;
+    bottom: -80rpx;
+    width: 240rpx;
+    height: 240rpx;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: -60rpx;
+    top: -40rpx;
+    width: 160rpx;
+    height: 160rpx;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+}
+
+.headerTitle {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.headerIcon {
+  font-size: 36rpx;
+  margin-right: 12rpx;
+}
+
+.headerDesc {
+  font-size: $font-size-sm;
+  opacity: 0.92;
+  line-height: 1.6;
+  margin-bottom: $spacing-md;
+  position: relative;
+  z-index: 1;
+}
+
+.headerMeta {
+  display: flex;
+  gap: $spacing-lg;
+  position: relative;
+  z-index: 1;
+}
+
+.metaItem {
+  font-size: $font-size-xs;
+  opacity: 0.88;
+  display: flex;
+  align-items: center;
+}
+
+.metaIcon {
+  margin-right: 8rpx;
+  font-size: $font-size-sm;
+}
+
+.quickActions {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-lg;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-sm;
+}
+
+.actionItem {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md 8rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.94);
+  }
+}
+
+.actionIcon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  margin-bottom: 10rpx;
+}
+
+.a1 { background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); }
+.a2 { background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); }
+.a3 { background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); }
+.a4 { background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); }
+
+.actionLabel {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  text-align: center;
+}
+
+.stepsSection {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-md;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+}
+
+.sectionIcon {
+  margin-right: 10rpx;
+  font-size: $font-size-lg;
+}
+
+.sectionCount {
+  font-size: $font-size-sm;
+  color: #0F766E;
+  font-weight: $font-weight-semibold;
+  background: linear-gradient(135deg, #CCFBF1 0%, #99F6E4 100%);
+  padding: 8rpx 20rpx;
+  border-radius: $radius-button;
+}
+
+.stepCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6rpx;
+    background: linear-gradient(180deg, #14B8A6 0%, #0F766E 100%);
+  }
+}
+
+.stepRow {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+}
+
+.stepNumber {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  background: linear-gradient(135deg, #14B8A6 0%, #0F766E 100%);
+  color: $color-text-white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+  box-shadow: 0 4rpx 12rpx rgba(15, 118, 110, 0.25);
+}
+
+.stepContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.stepTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: 1.6;
+  margin-bottom: 12rpx;
+}
+
+.stepTags {
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.stepTag {
+  font-size: $font-size-xs;
+  padding: 6rpx 16rpx;
+  border-radius: $radius-button;
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+}
+
+.tagAlert {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+  color: $color-error;
+}
+
+.tagInfo {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  color: $color-secondary;
+}
+
+.tagSafe {
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  color: $color-success;
+}
+
+.tagWarn {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+  color: #92400E;
+}
+
+.stepCheck {
+  display: flex;
+  align-items: center;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.checkBox {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 10rpx;
+  border: 3rpx solid $color-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-sm;
+  background: $color-bg-card;
+  transition: all $transition-base;
+}
+
+.checkBoxChecked {
+  background: #0F766E;
+  border-color: #0F766E;
+}
+
+.checkMark {
+  color: $color-text-white;
+  font-size: 24rpx;
+  font-weight: $font-weight-bold;
+}
+
+.checkLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.tipsSection {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-md;
+}
+
+.tipsCard {
+  background: linear-gradient(135deg, #FEF9C3 0%, #FEF08A 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.tipsHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.tipsIcon {
+  font-size: 32rpx;
+  margin-right: 10rpx;
+}
+
+.tipsTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: #92400E;
+}
+
+.tipsList {
+  padding-left: 0;
+  list-style: none;
+}
+
+.tipItem {
+  font-size: $font-size-sm;
+  color: #78350F;
+  line-height: 1.7;
+  padding-left: 32rpx;
+  position: relative;
+  margin-bottom: 8rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &::before {
+    content: '•';
+    position: absolute;
+    left: 8rpx;
+    color: #CA8A04;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.contactSection {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-md;
+}
+
+.contactCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+}
+
+.contactRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.contactInfo {
+  display: flex;
+  align-items: center;
+}
+
+.contactAvatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.av1 { background: linear-gradient(135deg, $color-primary-light 0%, $color-primary 100%); }
+.av2 { background: linear-gradient(135deg, $color-secondary 0%, $color-secondary-light 100%); }
+.av3 { background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%); }
+.av4 { background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%); }
+
+.contactName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.contactRole {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.contactBtn {
+  @include button-reset;
+  height: 64rpx;
+  padding: 0 28rpx;
+  border-radius: $radius-button;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%);
+  color: $color-success;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding calc($spacing-md + env(safe-area-inset-bottom));
+  display: flex;
+  gap: $spacing-md;
+  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.08);
+  z-index: 100;
+}
+
+.shareBtn {
+  @include button-reset;
+  flex: 1;
+  height: $button-height-lg;
+  background: $color-bg-hover;
+  color: $color-text-secondary;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+}
+
+.signBtn {
+  @include button-reset;
+  flex: 2;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, #0F766E 0%, #14B8A6 100%);
+  color: $color-text-white;
+  border-radius: $radius-button;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  box-shadow: 0 4rpx 16rpx rgba(15, 118, 110, 0.3);
+}
+
+.selectorTabs {
+  padding: 0 $page-padding;
+  margin-bottom: $spacing-md;
+  display: flex;
+  gap: $spacing-sm;
+  overflow-x: auto;
+}
+
+.selectorTab {
+  background: $color-bg-card;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-button;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  box-shadow: $shadow-card;
+  font-weight: $font-weight-medium;
+  transition: all $transition-base;
+}
+
+.selectorTabActive {
+  background: linear-gradient(135deg, #0F766E 0%, #14B8A6 100%);
+  color: $color-text-white;
+  box-shadow: 0 4rpx 12rpx rgba(15, 118, 110, 0.25);
+}

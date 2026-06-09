@@ -1,0 +1,147 @@
+@use '@/styles/variables.scss' as *;
+
+.inspectionCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.iconWrapper {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36rpx;
+  margin-right: $spacing-md;
+}
+
+.iconHose {
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+}
+
+.iconExtinguisher {
+  background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+}
+
+.iconHydrant {
+  background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+}
+
+.iconOther {
+  background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%);
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.title {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+  @include text-ellipsis;
+}
+
+.location {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+}
+
+.locationIcon {
+  margin-right: 6rpx;
+  font-size: 20rpx;
+}
+
+.statusTag {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.statusPending {
+  background: $color-tag-pending;
+  color: #B45309;
+}
+
+.statusCompleted {
+  background: $color-tag-completed;
+  color: #15803D;
+}
+
+.statusAbnormal {
+  background: $color-tag-urgent;
+  color: #B91C1C;
+}
+
+.cardContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.progressSection {
+  flex: 1;
+}
+
+.progressText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-bottom: 8rpx;
+}
+
+.progressBar {
+  width: 100%;
+  height: 12rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.actionBtn {
+  @include button-reset;
+  margin-left: $spacing-md;
+  padding: 0 24rpx;
+  height: $button-height-sm;
+  border-radius: $radius-button;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
